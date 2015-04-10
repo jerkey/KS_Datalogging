@@ -46,6 +46,10 @@ void setup() {
   Timer_Reset();
 
   Serial.begin(115200);
+  analogReference(EXTERNAL); // DEFAULT, INTERNAL, INTERNAL1V1, INTERNAL2V56, or EXTERNAL
+  UI_NextScr(); // go to second screen
+  UI_NextScr(); // go to third screen
+  UI_NextScr(); // go to fourth screen
 }
 
 void loop() {
@@ -84,13 +88,13 @@ void loop() {
 
 void LogTempInputs(boolean header = false) {
   if (header) {
-      for (int i= 0; i<16; i++) {
+      for (int i= 8; i<16; i++) { // THIS SETS HOW MANY TO PRINT TITLES FOR
         if (Temp_Available[i]) {
           PrintColumnHeader("T",i);
         }
       }
   } else {
-    for (int i= 0; i<16; i++) {
+    for (int i= 8; i<16; i++) { // THIS SETS HOW MANY THERMOCOUPLES TO PRINT
       if (Temp_Available[i]) {
         PrintColumnInt(Temp_Data[i]);
       }
@@ -115,6 +119,10 @@ void LogPressureInputs(boolean header = false) {
 }
 
 void LogAnalogInputs(boolean header = false) {
+  float analogs[8];
+  float corrections[8] = {
+ //   1.0265,0.97084,1.01641,1.00302,0.99583,0.99331,0.99331,1.00260 };
+ 1,1,1,1,1,1,1,1};
   if (header) {
     for (int i= 0; i<8; i++) {
       if (ANA_available[i] == 1) {
@@ -122,29 +130,12 @@ void LogAnalogInputs(boolean header = false) {
       }
     }
   } else {
-    if (ANA_available[0] == 1) {
-      PrintColumnInt(analogRead(ANA0));
-    }
-    if (ANA_available[1] == 1) {
-      PrintColumnInt(analogRead(ANA1));
-    }
-    if (ANA_available[2] == 1) {
-      PrintColumnInt(analogRead(ANA2));
-    }
-    if (ANA_available[3] == 1) {
-      PrintColumnInt(analogRead(ANA3));
-    }
-    if (ANA_available[4] == 1) {
-      PrintColumnInt(analogRead(ANA4));
-    }
-    if (ANA_available[5] == 1) {
-      PrintColumnInt(analogRead(ANA5));
-    }
-    if (ANA_available[6] == 1) {
-      PrintColumnInt(analogRead(ANA6));
-    }
-    if (ANA_available[7] == 1) {
-      PrintColumnInt(analogRead(ANA7));
+    for (int i= 0; i<8; i++) {
+      analogs[i] = 0;
+      for (int t= 0; t<10; t++) {
+        analogs[i] += analogRead(ANA0 + i);
+      }
+      PrintColumn((analogs[i] / 100.0) * corrections[i]);
     }
   }
 }
@@ -153,7 +144,7 @@ void LogTime(boolean header = false) {
   if (header) {
     PrintColumn("Time");
   } else {
-    PrintColumnInt(millis()/100.0); // time since restart in deciseconds
+    PrintColumnInt(millis()/1000.0); // time since restart in seconds
   }
 }
 
@@ -165,7 +156,7 @@ void PrintColumnHeader(String str,int n) {
 }
 
 void PrintColumn(float str) {
-   Serial.print(str);
+   Serial.print(str,1);
    Serial.print(", ");  
 }
 
@@ -193,8 +184,8 @@ void DoDatalogging() {
     }
     // Serial output for datalogging
     LogTime(header);
-    LogTempInputs(header);
-    LogPressureInputs(header);
+    //LogTempInputs(header);
+    //LogPressureInputs(header);
     LogAnalogInputs(header);
     Serial.print("\r\n"); // end of line
     lines++;
