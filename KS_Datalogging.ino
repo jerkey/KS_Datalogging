@@ -35,7 +35,7 @@ void setup() {
   Servo_Init();
   Timer_Init();
 
-  Disp_Reset();
+  // Disp_Reset();
   Kpd_Reset();
   UI_Reset();
   ADC_Reset();
