@@ -184,7 +184,7 @@ void DoDatalogging() {
     }
     // Serial output for datalogging
     LogTime(header);
-    //LogTempInputs(header);
+    LogTempInputs(header);
     //LogPressureInputs(header);
     LogAnalogInputs(header);
     Serial.print("\r\n"); // end of line
