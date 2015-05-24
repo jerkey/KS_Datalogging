@@ -120,9 +120,6 @@ void LogPressureInputs(boolean header = false) {
 
 void LogAnalogInputs(boolean header = false) {
   float analogs[8];
-  float corrections[8] = {
- //   1.0265,0.97084,1.01641,1.00302,0.99583,0.99331,0.99331,1.00260 };
- 1,1,1,1,1,1,1,1};
   if (header) {
     for (int i= 0; i<8; i++) {
       if (ANA_available[i] == 1) {
@@ -135,7 +132,7 @@ void LogAnalogInputs(boolean header = false) {
       for (int t= 0; t<10; t++) {
         analogs[i] += analogRead(ANA0 + i);
       }
-      PrintColumn((analogs[i] / 100.0) * corrections[i]);
+      PrintColumn(analogs[i] / 100.0);
     }
   }
 }
